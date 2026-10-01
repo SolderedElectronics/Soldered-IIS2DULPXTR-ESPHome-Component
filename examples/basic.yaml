@@ -1,5 +1,8 @@
+# Reads X, Y, Z acceleration, the internal die temperature, step count and
+# motion state from the Soldered IIS2DULPX breakout board once per update_interval.
+
 esphome:
-  name: soldered-esphome-component-template-test
+  name: iis2dulpx-basic
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -8,11 +11,39 @@ esp32:
 
 logger:
   level: DEBUG
+  hardware_uart: UART0
 
 external_components:
   - source:
       type: local
       path: ../components
-    components: [soldered_esphome_component_template]
+    components: [iis2dulpx]
 
-soldered_esphome_component_template:
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+  scan: true
+
+sensor:
+  - platform: iis2dulpx
+    address: 0x19
+    update_interval: 1s
+    range: 2G
+    odr: 100HZ_HP
+    motion_threshold: 0.25
+    motion_duration: 2
+    accel_x:
+      name: "IIS2DULPX Accel X"
+    accel_y:
+      name: "IIS2DULPX Accel Y"
+    accel_z:
+      name: "IIS2DULPX Accel Z"
+    temperature:
+      name: "IIS2DULPX Temperature"
+    step_count:
+      name: "IIS2DULPX Step Count"
+
+binary_sensor:
+  - platform: iis2dulpx
+    type: motion
+    name: "IIS2DULPX Motion"

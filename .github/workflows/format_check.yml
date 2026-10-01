@@ -20,4 +20,5 @@ jobs:
         run: pip install clang-format==13.0.1
 
       - name: Check formatting
-        run: find components -name "*.cpp" -o -name "*.h" | xargs clang-format --dry-run --Werror
+        # The vendored STMicroelectronics IIS2DULPX driver is kept unmodified and is not formatted.
+        run: find components \( -name "*.cpp" -o -name "*.h" \) -not -name "iis2dulpx_reg*" | xargs clang-format --dry-run --Werror

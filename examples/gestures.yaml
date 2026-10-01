@@ -1,0 +1,52 @@
+# Detects free-fall, single/double tap and tilt events on the Soldered
+# IIS2DULPX breakout board. Every event is latched by the sensor and reported
+# as ON for one update_interval after it happened.
+
+esphome:
+  name: iis2dulpx-gestures
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+  hardware_uart: UART0
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: [iis2dulpx]
+
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+  scan: true
+
+sensor:
+  - platform: iis2dulpx
+    address: 0x19
+    update_interval: 500ms
+    range: 2G
+    # Tap timing is counted in samples, the default tap settings are tuned for 400 Hz.
+    odr: 400HZ_HP
+    free_fall_threshold: 312MG
+    free_fall_duration: 3
+    tap_axis: Z
+    tap_threshold: 0.5
+
+binary_sensor:
+  - platform: iis2dulpx
+    type: free_fall
+    name: "IIS2DULPX Free Fall"
+  - platform: iis2dulpx
+    type: single_tap
+    name: "IIS2DULPX Single Tap"
+  - platform: iis2dulpx
+    type: double_tap
+    name: "IIS2DULPX Double Tap"
+  - platform: iis2dulpx
+    type: tilt
+    name: "IIS2DULPX Tilt"
